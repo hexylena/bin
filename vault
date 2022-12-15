@@ -1,0 +1,13 @@
+#!/bin/bash
+if [[ -f "$1" ]]; then
+	grep ANSIBLE_VAULT "$1" --silent
+	ec=$?
+	if (( ec == 0 )); then
+		ansible-vault edit "$1"
+	else
+		ansible-vault encrypt "$1"
+		ansible-vault edit "$1"
+	fi
+else
+	ansible-vault create "$1"
+fi

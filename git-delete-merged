@@ -1,0 +1,12 @@
+#!/bin/bash
+default_branch=${1:-main}
+current_branch=$(git branch | grep '*' | cut -c3-)
+
+if [[ "$current_branch" != "${default_branch}" ]]; then
+	echo "Checkout main first"
+	exit 1
+fi
+
+for branch in `git branch --merged | grep -v '*' | grep -v ${default_branch}`; do
+	git branch -d $branch 2> /dev/null;
+done

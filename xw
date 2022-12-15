@@ -1,0 +1,4 @@
+#!/bin/bash
+t=$(mktemp)
+cat "$1" | python3 -c 'import sys; import xml.dom.minidom; s=sys.stdin.read(); print(xml.dom.minidom.parseString(s).toprettyxml())'  | sed '/^\s*$/d' > "$t"
+mv "$t" "$1"

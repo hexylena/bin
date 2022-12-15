@@ -1,0 +1,6 @@
+#!/bin/bash
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+default=$(git remote | grep hexylena || echo 'origin')
+origin="${1:-$default}"
+
+git branch --set-upstream-to=${origin}/$current_branch $current_branch

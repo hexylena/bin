@@ -1,0 +1,4 @@
+#!/bin/bash
+t=$(mktemp)
+cat "$1" | jq -S '.' > $t
+mv $t "$1"

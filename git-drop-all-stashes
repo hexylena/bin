@@ -1,0 +1,2 @@
+#!/bin/bash
+git stash list | cut -d: -f 1 | tac | xargs -n 1 git stash drop

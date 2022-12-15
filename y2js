@@ -1,0 +1,2 @@
+#!/bin/bash
+python -c 'import sys; import yaml; import json; sys.stdout.write(json.dumps(yaml.safe_load(sys.stdin), indent=2))'

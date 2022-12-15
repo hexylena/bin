@@ -1,0 +1,5 @@
+#!/bin/bash
+lat=$1; shift;
+lon=$1; shift;
+
+exiftool -XMP:GPSLongitude="$lon" -XMP:GPSLatitude="$lat" -GPSLongitudeRef="West" -GPSLatitudeRef="North" -overwrite_original $@

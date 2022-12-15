@@ -1,0 +1,6 @@
+#!/bin/bash
+current=$(git remote get-url origin)
+if [[ "$current" == "https://github.com"* ]]; then
+	newurl=$(echo "$current" | sed -r 's|https://|git@|;s|github.com/|github.com:|;s|/?$|.git|')
+	git remote set-url origin $newurl
+fi

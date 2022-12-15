@@ -1,0 +1,25 @@
+#!/bin/bash
+set -e
+YOUTUBE="$1"
+BUCKET="test-galaxians-org"
+JOB_NAME="${YOUTUBE}-$(date +%s)"
+
+youtube-dl --extract-audio --audio-format m4a  --audio-quality 0 ${YOUTUBE} -o ${YOUTUBE}.m4a
+ffmpeg -i ${YOUTUBE}.m4a ${YOUTUBE}.mp3
+aws s3 cp "${YOUTUBE}.mp3" "s3://${BUCKET}/${YOUTUBE}.mp3"
+
+aws transcribe start-transcription-job --transcription-job-name ${JOB_NAME} --language-code en-US --media-format mp3 --media MediaFileUri="s3://${BUCKET}/${JOB_NAME}.mp3" --output-bucket-name ${BUCKET}
+
+while true; do
+	echo -n .
+	status=$(aws transcribe get-transcription-job --transcription-job-name "${JOB_NAME}" |  jq .TranscriptionJob.TranscriptionJobStatus)
+	if [[ "$status" != "IN_PROGRESS" ]]; then
+		aws transcribe get-transcription-job --transcription-job-name "${JOB_NAME}"
+		break
+	fi
+	sleep 10
+done;
+
+echo
+aws s3 cp s3://${BUCKET}/${JOB_NAME}.json ${YOUTUBE}.json
+cat ${YOUTUBE}.json | jq .results.transcripts[0].transcript -r > ${YOUTUBE}.txt

@@ -1,0 +1,3 @@
+#!/bin/bash
+x="${1:-.}"
+find "$x" -type f -newermt `date -I`

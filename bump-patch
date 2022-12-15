@@ -1,0 +1,9 @@
+#!/bin/bash
+git pull
+MOST_RECENT_TAG=$(git describe --tags --abbrev=0)
+major_minor=$(echo "$MOST_RECENT_TAG" | sed 's/\(.*\..*\.\)\(.*\)/\1/')
+patch=$(echo "$MOST_RECENT_TAG" | sed 's/\(.*\..*\.\)\(.*\)/\2/')
+newpatch=$(echo "$patch + 1" | bc)
+NEW_TAG="${major_minor}${newpatch}"
+echo "$MOST_RECENT_TAG -> $NEW_TAG"
+git tag "${NEW_TAG}"

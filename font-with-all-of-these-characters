@@ -1,0 +1,8 @@
+#!/bin/bash
+if (( $# > 0 )); then
+	input=$(echo "$@")
+else
+	input=$(cat)
+fi
+query=$(echo "$input" | tr -d '[:cntrl:]' | LINES=1000 uniname | sed -r 's/\s{2,}/\t/g' | cut -f 4 | awk '(NR>1)' | paste -s -d,)
+fc-list ":charset=$query" | sort

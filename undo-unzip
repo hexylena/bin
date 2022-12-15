@@ -1,0 +1,13 @@
+fn="$1"
+IFS=$'\n'
+for file in $(unzip -l "$fn" | awk '(NR > 3){print $4}' | grep -v '^$'); do
+	if [[ -f "$file" ]]; then
+		d=$(dirname "$file")
+		rm "$file"
+		# TODO recurse upwards.
+		if [[ "$d" != "." ]]; then
+			rmdir "$d"
+		fi
+	fi
+done
+

@@ -1,0 +1,31 @@
+#!/bin/bash
+#set -x
+ID=$1
+BRANCH=pr-$ID
+
+data="$(curl --silent https://api.github.com/repos/galaxyproject/training-material/pulls/$ID)"
+user=$(echo "$data" | jq .user.login -r)
+head=$(echo "$data" | jq .head.label -r)
+base=$(echo "$data" | jq .base.label -r)
+
+head_org=$(echo "$head" | cut -d: -f 1)
+head_bra=$(echo "$head" | cut -d: -f 2)
+base_org=$(echo "$base" | cut -d: -f 1)
+base_bra=$(echo "$base" | cut -d: -f 2)
+
+if [[ "$head_org" == "$base_org" ]]; then
+	git fetch origin
+	git checkout "$head_bra"
+else
+	# Add their remote
+	git remote add "$user" "$(echo "$data" | jq .head.repo.ssh_url -r)"
+	git fetch "$user"
+
+	# Fetch our specific PR
+	git fetch origin pull/$ID/head:$BRANCH
+	# Check it out
+	git checkout $BRANCH
+
+	# And then let us push to their repo.
+	git branch --set-upstream-to="$(echo "$head" | sed 's|:|/|')" pr-$ID
+fi
