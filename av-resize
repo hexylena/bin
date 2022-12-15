@@ -1,0 +1,6 @@
+#!/bin/bash
+for x in "$@"; do
+	d="$(dirname "$x")"
+	q="$(basename "$x")"
+	ffmpeg -hide_banner -y -i "$x" -vf scale=-1:$(( height / 4 )) "$d/small.$q"
+done;

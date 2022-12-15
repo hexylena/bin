@@ -1,0 +1,4 @@
+#!/bin/bash
+for x in "$@"; do
+	ffmpeg -hide_banner -i "$x" -vn $x.mp3
+done

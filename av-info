@@ -1,0 +1,4 @@
+#!/bin/bash
+for x in "$@"; do
+	ffprobe -hide_banner -loglevel warning -show_format -show_private_data -show_streams -print_format json -i "$x" | jq -S .
+done;

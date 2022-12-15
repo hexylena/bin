@@ -1,0 +1,12 @@
+#!/bin/bash
+if (( $# != 3 )); then
+	echo in start end
+	exit 1
+fi
+
+in="$1"; shift
+start="$1"; shift
+end="$1"; shift
+
+out="$(dirname "$in")/"$(basename "$in" .mp4)"-timecrop.mp4"
+ffmpeg -hide_banner -ss "$start" -i "$in" -to "$end" "$out"

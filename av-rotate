@@ -1,0 +1,2 @@
+#!/bin/bash
+ffmpeg -hide_banner -i $1 -vf "transpose=clock" $1-rotate.mp4

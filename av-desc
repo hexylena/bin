@@ -1,0 +1,3 @@
+for x in "$@"; do
+	ffprobe -hide_banner "$x"
+done;

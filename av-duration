@@ -1,0 +1,5 @@
+#!/bin/bash
+for x in "$@"; do
+	printf "%s\t" "$x"
+	av-info "$x" | jq -S -r .format.duration
+done;
