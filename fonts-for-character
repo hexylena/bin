@@ -1,0 +1,15 @@
+#!/bin/bash
+tmp=$(mktemp -d)
+
+IFS=$'\n'
+for font in $(~/.bin/font-with-all-of-these-characters "$1" | egrep '\.[to]tf:' | sort -R | head -n 16 | cut -d: -f 1); do
+	name=$(echo "$font" | sed 's|.*/||')
+	echo "$font - $name"
+	fontimage --pixelsize 140 --text "$1" --pixelsize 20 --text "$name" -o "$tmp/$name.png" $font 2>/dev/null &
+done
+
+wait
+montage $tmp/*.png -geometry +0+0 $tmp/final.png
+echo $tmp
+echo
+xdg-open $tmp/final.png

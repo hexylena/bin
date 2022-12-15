@@ -1,0 +1,2 @@
+#!/bin/bash
+cat | awk '{print NR"\t"$0}'

@@ -1,0 +1,4 @@
+#!/bin/bash
+nmcli connection down $1;
+nmcli connection modify $1 wifi.cloned-mac-address 00:$(openssl rand -hex 5 | sed 's/\([0-9a-f][0-9a-f]\)/\1:/g;s/:$//');
+nmcli connection up $1;

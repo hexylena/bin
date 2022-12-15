@@ -1,0 +1,15 @@
+#!/bin/bash
+url="$(git remote get-url upstream 2>/dev/null)"
+ec=$?
+if (( ec > 0 )); then
+	url=$(git remote get-url origin)
+fi
+
+if [[ "$url" == "git@"* ]]; then
+	user=$(echo "$url" | sed 's/git@github.com://g' | cut -d/ -f 1)
+	repo=$(echo "$url" | sed 's/git@github.com://g;s/\.git$//;' | cut -d/ -f 2)
+else
+	echo "Helena implement this crap"
+fi
+
+ansible-galaxy role import --token $ANSIBLE_GALAXY_TOKEN $user $repo --branch main

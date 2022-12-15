@@ -1,0 +1,11 @@
+#!/bin/bash
+printf "date\tclouds\ttemp\tfeels\tWind\tRain\tRain mm\tSun\n"
+curl 'https://forecast.buienradar.nl/2.0/forecast/2747373' \
+	-H  'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0' \
+	-H  'Accept: application/json, text/javascript, */*; q=0.01' \
+	-H  'Accept-Language: en-US,en;q=0.5' --compressed \
+	-H  'Origin: https://www.buienradar.nl' \
+	-H  'DNT: 1' \
+	-H  'Connection: keep-alive' \
+	-H  'Referer: https://www.buienradar.nl/weer/den%20haag/nl/2747373/2521xv/5daagse' | \
+jq '.days[].hours[] | [.datetime, .cloudcover, .temperature, .feeltemperature, (.beaufort|tostring) + .winddirection, .precipitation, .precipitationmm, .sunshine] | @tsv' -r

@@ -1,0 +1,7 @@
+#!/bin/bash
+tmpfile=$(mktemp);
+unpinned_reqs=$(mktemp);
+cat requirements.txt| sed 's/==.*//' > $unpinned_reqs;
+pip freeze | grep -i -f $unpinned_reqs | sort > $tmpfile;
+rm -f $unpinned_reqs
+mv $tmpfile requirements.txt;

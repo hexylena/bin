@@ -1,0 +1,3 @@
+#!/bin/bash
+pactl list sinks | tr '\n' ' ' | egrep -o 'Sink #[0-9]+\s*State: [A-Z]+' | grep RUNNING | sed 's/.*#//g;s/\t.*//'
+#pactl list sinks | tr -d '\n' | egrep -o 'Sink #.\sState: [A-Z]+' | grep RUNNING | sed 's/.*#//g;s/\t.*//'

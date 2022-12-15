@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+import sys
+
+d = {}
+for line in sys.stdin.readlines():
+    q = line.split()
+    if q[0] not in d:
+        d[q[0]] = []
+    d[q[0]].append(q[1])
+
+
+for k, v in d.items():
+    z = '\t'.join(v)
+    print(f"{k}\t{z}")

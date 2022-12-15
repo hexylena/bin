@@ -1,0 +1,2 @@
+#!/bin/bash
+xdg-open $(openstack console url show $1 -f value | tail -n1)

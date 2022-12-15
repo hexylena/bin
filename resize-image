@@ -1,0 +1,9 @@
+#!/bin/bash
+#resize 1000x *
+size=$1; shift;
+
+for x in $@; do
+	t=$(mktemp --suffix=.jpg)
+	convert -resize $size $x $t;
+	mv $t $x;
+done;

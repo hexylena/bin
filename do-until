@@ -1,0 +1,37 @@
+#!/bin/bash
+
+arg="$1"; shift
+if [[ "$arg" == "-f" ]]; then
+	mode="file"
+	path="$1"; shift;
+elif [[ "$arg" == "-d" ]]; then
+	mode="dir"
+	path="$1"; shift;
+elif [[ "$arg" == "-e" ]]; then
+	mode="exit"
+else
+	exit 1
+fi
+
+no_ctrlc(){
+	exit 42
+}
+
+trap no_ctrlc SIGINT
+
+while true; do
+	echo "$@" | ts
+	$@
+	ec=$?
+	echo $ec
+
+	if [[ "$mode" == "exit" ]] && (( ec == 0 )); then
+		exit 0
+	fi
+	if [[ "$mode" == "dir" ]] && [[ -d "$path" ]]; then
+		exit 0
+	fi
+	if [[ "$mode" == "file" ]] && [[ -e "$path" ]]; then
+		exit 0
+	fi
+done

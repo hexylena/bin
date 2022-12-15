@@ -1,0 +1,10 @@
+#!/bin/bash
+pactl list | grep -q sink_name=steam
+ec=$?
+if (( ec > 0 )); then
+	echo "Loading module"
+	pactl load-module module-null-sink sink_name=steam
+else
+	echo "Module already loaded"
+fi
+echo "Record this device with a command line:    parec -d steam.monitor | oggenc -b 192 -o out.ogg --raw -"

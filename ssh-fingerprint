@@ -1,0 +1,5 @@
+#!/bin/bash
+for key in $@; do
+	ssh-keygen -l -f "$key"
+	ssh-keygen -l -E md5 -f "$key"
+done

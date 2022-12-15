@@ -1,0 +1,10 @@
+#!/bin/bash
+LOCAL_REPO=~/.local/share/license-list-data
+if [[ ! -d ~/.local/share/license-list-data ]]; then
+	git clone https://github.com/spdx/license-list-data --depth=1 ${LOCAL_REPO}
+fi
+
+license_id=$(ls ${LOCAL_REPO}/text/*  | fzf | cut -f1)
+cp ${license_id} LICENSE.txt
+git add LICENSE.txt;
+git commit -m 'Added LICENSE';

@@ -1,0 +1,4 @@
+#!/bin/bash
+marker=$(fdisk -lu $1 | awk '/Linux/ {} END {print $3}')
+offset=$(( 512 * $marker ))
+sudo mount -o loop,offset=$offset $1 $2

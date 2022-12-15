@@ -1,0 +1,3 @@
+#!/bin/bash
+pip install $1 && echo $1 >> requirements.txt;
+pipfreeze

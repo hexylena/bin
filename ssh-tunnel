@@ -1,0 +1,12 @@
+#!/bin/bash
+if (( $# < 2 )); then
+	echo "$0 remote_port remote_host [local_port]"
+	exit 1
+fi
+
+REMOTE_HOST=$1; shift;
+REMOTE_PORT=$1; shift;
+LOCAL_PORT=$(shuf -i 2000-65000 -n 1)
+
+echo "Forwarding http://localhost:${LOCAL_PORT}"
+ssh $@ -L ${LOCAL_PORT}:localhost:${REMOTE_PORT} ${REMOTE_HOST}

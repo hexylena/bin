@@ -1,0 +1,3 @@
+#!/bin/bash
+#ls --sort=time -l -r --color=auto "$@"
+find "$@" -printf "%A+\t%p\n" | sort

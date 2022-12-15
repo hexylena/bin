@@ -1,0 +1,32 @@
+#! /bin/sh
+# author: manuel messner
+# date: 2018-08-22 17:36:34+02:00
+set -ex
+
+cookie_jar=`mktemp`
+
+curl() {
+    command curl \
+        --silent \
+        --location \
+        --cookie $cookie_jar \
+        --cookie-jar $cookie_jar \
+        "$@"
+}
+
+
+csrf_token() {
+    perl -ne '/CSRFToken.*value="([a-z0-9]+)"/ and print "CSRFToken=$1"'
+}
+
+
+domain='http://www.wifionice.de'
+csrf_token="$(curl google.de | csrf_token)"
+echo $csrf_token
+curl \
+    --header "Origin: $domain" \
+    --header "Referer: $domain/de/" \
+    --data "login=true&$csrf_token&connect=" \
+    "$domain/de"
+
+rm -f $cookie_jar

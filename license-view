@@ -1,0 +1,8 @@
+#!/bin/bash
+LOCAL_REPO=~/.local/share/license-list-data
+if [[ ! -d ~/.local/share/license-list-data ]]; then
+	git clone https://github.com/spdx/license-list-data --depth=1 ${LOCAL_REPO}
+fi
+
+license_id=$(ls ${LOCAL_REPO}/text/*  | fzf | cut -f1)
+cat "${license_id}"
