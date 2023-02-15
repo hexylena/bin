@@ -3,7 +3,7 @@
 
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 ID=$(echo "$BRANCH" | sed 's/pr-//g')
-repo=$(git remote -v | grep galaxyproject | sed 's|[:/]|\n|g' |grep fetch | cut -f 1 -d' ')
+repo=$(git remote -v | sed 's/\.git//g' | grep galaxyproject | sed 's|[:/]|\n|g' |grep fetch | cut -f 1 -d' ' | uniq)
 data="$(curl --silent https://api.github.com/repos/galaxyproject/$repo/pulls/$ID)"
 
 user=$(echo "$data" | jq .user.login -r)

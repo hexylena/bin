@@ -3,8 +3,16 @@
 ID=$1
 BRANCH=pr-$ID
 
-repo=$(git remote -v | grep galaxyproject | sed 's|[:/]|\n|g' |grep fetch | cut -f 1 -d' ')
+repo=$(git remote -v | grep galaxyproject | sed 's|[:/]|\n|g' |grep fetch | sort -u | cut -f 1 -d' ' | sed 's/\.git//g')
 data="$(curl --silent https://api.github.com/repos/galaxyproject/$repo/pulls/$ID)"
+err=$(echo "$data" | jq .message -r)
+if [[ "$err" != "null" ]]; then
+	echo "$err"
+	echo "Detected repo: $repo"
+	echo "Detected URL: https://api.github.com/repos/galaxyproject/$repo/pulls/$ID"
+	exit 1
+fi
+
 user=$(echo "$data" | jq .user.login -r)
 head=$(echo "$data" | jq .head.label -r)
 base=$(echo "$data" | jq .base.label -r)
