@@ -4,10 +4,14 @@ YOUTUBE="$1"
 BUCKET="test-galaxians-org"
 JOB_NAME="${YOUTUBE}-$(date +%s)"
 
-youtube-dl --extract-audio --audio-format m4a  --audio-quality 0 ${YOUTUBE} -o ${YOUTUBE}.m4a
+echo "Downloading audio"
+yt-dlp --extract-audio --audio-format m4a  --audio-quality 0 ${YOUTUBE} -o ${YOUTUBE}.m4a
+echo "Converting to Mp3"
 ffmpeg -i ${YOUTUBE}.m4a ${YOUTUBE}.mp3
+echo "Uploading to S3"
 aws s3 cp "${YOUTUBE}.mp3" "s3://${BUCKET}/${YOUTUBE}.mp3"
 
+echo "Transcribing"
 aws transcribe start-transcription-job --transcription-job-name ${JOB_NAME} --language-code en-US --media-format mp3 --media MediaFileUri="s3://${BUCKET}/${JOB_NAME}.mp3" --output-bucket-name ${BUCKET}
 
 while true; do

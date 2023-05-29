@@ -2,14 +2,23 @@
 #set -x
 ID=$1
 BRANCH=pr-$ID
+PROJECT=${2:-galaxyproject}
 
-repo=$(git remote -v | grep galaxyproject | sed 's|[:/]|\n|g' |grep fetch | sort -u | cut -f 1 -d' ' | sed 's/\.git//g')
-data="$(curl --silent https://api.github.com/repos/galaxyproject/$repo/pulls/$ID)"
+matching_branches=$(git branch | grep '^\s*'$BRANCH'$' | wc -l)
+
+if (( matching_branches > 0 )); then
+	echo "Branch $BRANCH already exists"
+	git checkout $BRANCH
+	exit 0
+fi
+
+repo=$(git remote -v | grep $PROJECT | sed 's|[:/]|\n|g' |grep fetch | sort -u | cut -f 1 -d' ' | sed 's/\.git//g')
+data="$(curl --silent https://api.github.com/repos/$PROJECT/$repo/pulls/$ID)"
 err=$(echo "$data" | jq .message -r)
 if [[ "$err" != "null" ]]; then
 	echo "$err"
 	echo "Detected repo: $repo"
-	echo "Detected URL: https://api.github.com/repos/galaxyproject/$repo/pulls/$ID"
+	echo "Detected URL: https://api.github.com/repos/$PROJECT/$repo/pulls/$ID"
 	exit 1
 fi
 

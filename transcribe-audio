@@ -1,25 +1,27 @@
 #!/bin/bash
 set -e
-YOUTUBE="$1"
-BUCKET="test-galaxians-org"
-JOB_NAME="${YOUTUBE}-$(date +%s)"
+declare -a JOBS
+for YOUTUBE in $@; do
+	BUCKET="test-galaxians-org"
+	JOB_NAME="${YOUTUBE}-$(date +%s)"
+	aws s3 cp "${YOUTUBE}" "s3://${BUCKET}/${JOB_NAME}.mp3"
+	# Immediately start the job, they can continue processing while we upload more.
+	aws transcribe start-transcription-job --transcription-job-name ${JOB_NAME} --language-code en-US --media-format mp3 --media MediaFileUri="s3://${BUCKET}/${JOB_NAME}.mp3" --output-bucket-name ${BUCKET}
+	JOBS+=("${JOB_NAME}")
+done
 
+for job in "${JOBS[@]}"; do
+	while true; do
+		echo -n .
+		status=$(aws transcribe get-transcription-job --transcription-job-name "${job}" |  jq -r .TranscriptionJob.TranscriptionJobStatus)
+		if [[ "$status" != "IN_PROGRESS" ]]; then
+			aws transcribe get-transcription-job --transcription-job-name "${job}"
+			break
+		fi
+		sleep 10
+	done;
 
-
-aws s3 cp "${YOUTUBE}" "s3://${BUCKET}/${JOB_NAME}.mp3"
-
-aws transcribe start-transcription-job --transcription-job-name ${JOB_NAME} --language-code en-US --media-format mp3 --media MediaFileUri="s3://${BUCKET}/${JOB_NAME}.mp3" --output-bucket-name ${BUCKET}
-
-while true; do
-	echo -n .
-	status=$(aws transcribe get-transcription-job --transcription-job-name "${JOB_NAME}" |  jq -r .TranscriptionJob.TranscriptionJobStatus)
-	if [[ "$status" != "IN_PROGRESS" ]]; then
-		aws transcribe get-transcription-job --transcription-job-name "${JOB_NAME}"
-		break
-	fi
-	sleep 10
-done;
-
-echo
-aws s3 cp s3://${BUCKET}/${JOB_NAME}.json ${YOUTUBE}.json
-cat ${YOUTUBE}.json | jq .results.transcripts[0].transcript -r > ${YOUTUBE}.txt
+	echo
+	aws s3 cp s3://${BUCKET}/${job}.json ${job}.json
+	cat ${job}.json | jq .results.transcripts[0].transcript -r > ${job}.txt
+done

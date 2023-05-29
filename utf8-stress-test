@@ -1,1 +1,2 @@
 curl https://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-demo.txt
+curl https://gist.githubusercontent.com/BuonOmo/77b75349c517defb01ef1097e72227af/raw/8f93bb3827a8aa797b5047899caa3c94d83bcb92/emojis.sh | sed 's/.*=//g' | tr -d '\n'
