@@ -11,7 +11,8 @@ light=(2 3 4 6 7 10 11 12 13 14 15 33 39 41 42 43 44 45 46 47 48 49 50 51 68 69 
 if [[ "$1" != "" ]]; then
 	sesh="$1"
 else
-	sesh="$(openssl rand -hex 4)"
+	sesh=$(basename $(pwd))
+	# sesh="$(openssl rand -hex 4)"
 fi
 
 hashed=$(hash_string256 "$sesh")
