@@ -12,6 +12,7 @@ if [[ "$1" != "" ]]; then
 	sesh="$1"
 else
 	sesh=$(basename $(pwd))
+	sesh=$(echo "$sesh" | tr '.' '-')
 	# sesh="$(openssl rand -hex 4)"
 fi
 
