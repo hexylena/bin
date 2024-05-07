@@ -1,0 +1,4 @@
+#!/bin/bash
+tails=$(sort -R < ~/bin/tails.txt | head -n 1)
+scales=$(sort -R < ~/bin/scales.txt | head -n 1)
+git checkout -b $tails-$scales
