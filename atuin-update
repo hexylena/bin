@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+TAG=$(curl --silent https://api.github.com/repos/atuinsh/atuin/releases | jq '.[0].tag_name' -r)
+echo "Latest version: ${TAG}"
+OUT="/home/user/bin/atuin-${TAG}"
+if [[ ! -f "${OUT}" ]]; then
+	t=$(mktemp -d)
+	cd "$t"
+	curl --silent -L https://github.com/atuinsh/atuin/releases/download/v18.2.0/atuin-v18.2.0-x86_64-unknown-linux-gnu.tar.gz | tar zxvf - --strip-components=1 atuin-v18.2.0-x86_64-unknown-linux-gnu/atuin
+	mv atuin "${OUT}"
+	echo "Downloaded ${OUT}"
+fi
+rm -f /home/user/bin/atuin
+ln -s "${OUT}" /home/user/bin/atuin
+echo "Done"
