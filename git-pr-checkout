@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -x
+# set -x
 ID=$1
 BRANCH=pr-$ID
 PROJECT=${2:-galaxyproject}
@@ -12,15 +12,19 @@ if (( matching_branches > 0 )); then
 	exit 0
 fi
 
-repo=$(git remote -v | grep $PROJECT | sed 's|[:/]|\n|g' |grep fetch | sort -u | cut -f 1 -d' ' | sed 's/\.git$//g')
-data="$(curl --silent https://api.github.com/repos/$PROJECT/$repo/pulls/$ID)"
+repo=$(git remote -v | grep ^origin | awk '{print $2}' | sed 's|.*github.com[/:]||' | sed 's|\.git$||;s|/$||;' | sort -u | head -n 1)
+# echo $repo
+# echo https://api.github.com/repos/$repo/pulls/$ID
+# exit 42
+data="$(curl --silent https://api.github.com/repos/$repo/pulls/$ID)"
 err=$(echo "$data" | jq .message -r)
 if [[ "$err" != "null" ]]; then
-	echo "$err"
+	echo "Error: $err"
 	echo "Detected repo: $repo"
-	echo "Detected URL: https://api.github.com/repos/$PROJECT/$repo/pulls/$ID"
+	echo "Detected URL: https://api.github.com/repos/$repo/pulls/$ID"
 	exit 1
 fi
+echo $data | jq . -S
 
 user=$(echo "$data" | jq .user.login -r)
 head=$(echo "$data" | jq .head.label -r)
@@ -49,8 +53,9 @@ else
 	# Fetch our specific PR
 	git fetch origin pull/$ID/head:$BRANCH
 	# Check it out
-	git checkout $BRANCH
-
-	# And then let us push to their repo.
-	git branch --set-upstream-to="$(echo "$head" | sed 's|:|/|')"
+	git checkout --track $user/$BRANCH $BRANCH
 fi
+
+# And then let us push to their repo.
+# git branch --set-upstream-to="$(echo "$head" | sed 's|:|/|')"
+# git branch -u remotes/ammaraziz/main $BRANCH

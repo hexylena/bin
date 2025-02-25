@@ -1,21 +1,33 @@
 #!/bin/bash
 #set -x
-PROJECT=${1:-galaxyproject}
+#
+remote=$(git rev-parse --abbrev-ref --symbolic-full-name @{u})
+echo "$remote (should be remotes/{user}/{branch}"
 
-BRANCH=$(git rev-parse --abbrev-ref HEAD)
-ID=$(echo "$BRANCH" | sed 's/pr-//g')
-repo=$(git remote -v | sed 's/\.git//g' | grep $PROJECT | sed 's|[:/]|\n|g' |grep fetch | cut -f 1 -d' ' | uniq)
-data="$(curl --silent https://api.github.com/repos/$PROJECT/$repo/pulls/$ID)"
+remote_name=$(echo "$remote" | cut -f 2 -d /)
+remote_branch=$(echo "$remote" | cut -f 3 -d /)
 
-user=$(echo "$data" | jq .user.login -r)
-head=$(echo "$data" | jq .head.label -r)
-base=$(echo "$data" | jq .base.label -r)
-
-head_org=$(echo "$head" | cut -d: -f 1)
-head_bra=$(echo "$head" | cut -d: -f 2)
-base_org=$(echo "$base" | cut -d: -f 1)
-base_bra=$(echo "$base" | cut -d: -f 2)
+git push -u $remote_name $remote_branch
 
 
-echo git push $user HEAD:$head_bra
-git push $user HEAD:$head_bra
+# #
+# #
+# PROJECT=${1:-galaxyproject}
+#
+# BRANCH=$(git rev-parse --abbrev-ref HEAD)
+# ID=$(echo "$BRANCH" | sed 's/pr-//g')
+# repo=$(git remote -v | sed 's/\.git//g' | grep $PROJECT | sed 's|[:/]|\n|g' |grep fetch | cut -f 1 -d' ' | uniq)
+# data="$(curl --silent https://api.github.com/repos/$PROJECT/$repo/pulls/$ID)"
+#
+# user=$(echo "$data" | jq .user.login -r)
+# head=$(echo "$data" | jq .head.label -r)
+# base=$(echo "$data" | jq .base.label -r)
+#
+# head_org=$(echo "$head" | cut -d: -f 1)
+# head_bra=$(echo "$head" | cut -d: -f 2)
+# base_org=$(echo "$base" | cut -d: -f 1)
+# base_bra=$(echo "$base" | cut -d: -f 2)
+#
+#
+# echo git push $user HEAD:$head_bra
+# git push $user HEAD:$head_bra
